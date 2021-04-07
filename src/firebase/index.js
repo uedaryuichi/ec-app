@@ -10,4 +10,4 @@ export const auth = firebase.auth();
 export const db = firebase.firestore();
 export const storage = firebase.storage();
 export const functions = firebase.functions();
-export const FirebaseTimestamp = firebase.firesstore.Timestamp;
+export const FirebaseTimestamp = firebase.firestore.Timestamp;
