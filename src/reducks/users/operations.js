@@ -2,27 +2,61 @@ import {signInAction} from './actions';
 import {push} from 'connected-react-router';
 import {auth, db, FirebaseTimestamp} from '../../firebase/index';
 
-export const signIn = () => {
-    return async (dispatch, getState) => {
-        const state = getState()
-        const isSignedIn = state.users.isSignedIn
+export const listenAuthState = () => {
+    return async (dispatch) => {
+        return auth.onAuthStateChanged(user => {
+            if (user) {
+                const uid = user.uid;
 
-        if (!isSignedIn) {
-            const url = 'http://api.github.com/users/deatiger'
+                db.collection('users').doc(uid).get()
+                    .then(snapshot => {
+                        const data = snapshot.data()
 
-            const response = await fetch(url)
-                            .then(res => res.json())
-                            .catch(() => null)
-            
-            const username = response.login
+                        dispatch(signInAction({
+                            isSignedIn: true,
+                            role: data.role,
+                            uid: uid,
+                            username: data.username
+                        }));
 
-            dispatch(signInAction({
-                isSignedIn: true,
-                uid: '00001',
-                username: username
-            }))
-            dispatch(push('/'))
+                        dispatch(push('/'));
+                    })
+            } else {
+                dispatch(push('/signin'));
+            }
+        })
+    }
+}
+
+export const signIn = (email, password) => {
+    return async (dispatch) => {
+        if (email === '' || password === '') {
+            alert('必須項目が未入力です');
+            return false;
         }
+
+        auth.signInWithEmailAndPassword(email, password)
+            .then(result => {
+                const user = result.user;
+
+                if (user) {
+                    const uid = user.uid;
+
+                    db.collection('users').doc(uid).get()
+                        .then(snapshot => {
+                            const data = snapshot.data()
+
+                            dispatch(signInAction({
+                                isSignedIn: true,
+                                role: data.role,
+                                uid: uid,
+                                username: data.username
+                            }));
+
+                            dispatch(push('/'));
+                        })
+                }
+            })
     }
 }
 
