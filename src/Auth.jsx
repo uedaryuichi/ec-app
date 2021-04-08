@@ -9,6 +9,9 @@ const Auth = ({children}) => {
     const isSignedIn = getIsSignedIn(selector);
 
     useEffect(() => {
+        console.log('from Auth');
+        console.log(isSignedIn);
+        console.log(selector);
         if (!isSignedIn) {
             dispatch(listenAuthState())
         }
