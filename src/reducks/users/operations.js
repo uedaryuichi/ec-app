@@ -21,7 +21,6 @@ export const listenAuthState = () => {
                             username: data.username
                         }));
 
-                        dispatch(push('/'));
                     }).catch((e) => {
                         console.log('from listenAuthState error ');
                         console.log(e);
