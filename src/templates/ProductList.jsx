@@ -4,11 +4,15 @@ import {ProductCard} from '../components/Products';
 import {fetchProducts} from '../reducks/products/operations';
 import {getProducts} from '../reducks/products/selectors';
 
-const ProductList = (props) => {
+const ProductList = () => {
     const dispatch = useDispatch();
     const selector = useSelector((state) => state);
     const products = getProducts(selector);
 
+    // const query = window.location.search
+    // const gender = /^\?gender=/.test(query) ? query.split('?gender=')[1] : ""
+    // const category = /^\?category=/.test(query) ? query.split('?category=')[1] : ""
+    
     useEffect(() => {
         dispatch(fetchProducts())
     }, []);
