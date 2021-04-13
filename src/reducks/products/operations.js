@@ -29,6 +29,55 @@ export const fetchProducts = () => {
     }
 }
 
+export const orderProduct = (productsInCart, amount) => {
+    return async (dispatch, getState) => {
+        const uid = getState().users.uid;
+        const userRef = db.collection('users').doc(uid)
+        const timestamp = FirebaseTimestamp.now();
+
+        let products = {},
+            soldOutProducts = [];
+
+        const batch = db.batch();
+
+        for (const product of productsInCart) {
+            const snapshot = await productsRef.doc(product.productId).get();
+            const sizes = snapshot.data().sizes;
+
+            const updatedSizes = sizes.map(size => {
+                if (size.size === product.size) {
+                    if (size.quantity === 0) {
+                        soldOutProducts.push(product.name);
+                        return size
+                    }
+                    return {
+                        size: size.size,
+                        quantity: size.quantity - 1
+                    }
+                } else {
+                    return size;
+                }
+            });
+
+            products[product.productId] = {
+                id: product.productId,
+                images: product.images,
+                name: product.name,
+                price: product.price,
+                size: product.size
+            }
+
+            batch.update(
+                productsRef.doc(product.productId),
+                    {sizes: updatedSizes}
+            );
+
+            batch.delete(
+                
+            )
+        }
+    }
+}
 
 export const saveProduct = (id, name, description, category, gender, price, images, sizes) => {
     return async (dispatch) => {
