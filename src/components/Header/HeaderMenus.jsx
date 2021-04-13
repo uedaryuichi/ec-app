@@ -45,7 +45,7 @@ const HeaderMenus = (props) => {
 
     return (
         <>
-            <IconButton>
+            <IconButton onClick={() => dispatch(push('/cart'))}>
                 <Badge badgeContent={productsInCart.length} color='secondary'>
                     <ShoppingCartIcon />
                 </Badge>
