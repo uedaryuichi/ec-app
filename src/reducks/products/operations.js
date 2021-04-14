@@ -1,6 +1,8 @@
-import { db, FirebaseTimestamp } from "../../firebase"
-import {push} from 'connected-react-router';
-import {deleteProductAction, fetchProductsAction} from './actions';
+import {db, FirebaseTimestamp} from '../../firebase/index';
+import {push} from "connected-react-router";
+import {deleteProductAction, fetchProductsAction} from "./actions"
+// import {hideLoadingAction, showLoadingAction} from "../loading/actions";
+// import {createPaymentIntent} from "../payments/operations";
 
 const productsRef = db.collection('products');
 
@@ -73,8 +75,38 @@ export const orderProduct = (productsInCart, amount) => {
             );
 
             batch.delete(
-                
+                userRef.collection('cart').doc(product.cartId)
             )
+        }
+
+        if (soldOutProducts.length > 0) {
+            const errorMessage = (soldOutProducts.length > 1) ?
+                                soldOutProducts.join('と') :
+                                soldOutProducts[0];
+            alert('大変申し訳ありません。' + errorMessage + 'が在庫切れとなったため、注文処理を中断しました。');
+            return false;
+        } else {
+            batch.commit()
+                .then(() => {
+                    const orderRef = userRef.collection('orders').doc();
+                    const date = timestamp.toDate();
+                    const shippingDate = FirebaseTimestamp.fromDate(new Date(date.setDate(date.getDate() + 3)))
+
+                    const history = {
+                        amount: amount,
+                        created_at: timestamp,
+                        id: orderRef.id,
+                        products: products,
+                        shippingDate: shippingDate,
+                        updated_at: timestamp
+                    }
+
+                    orderRef.set(history);
+                    dispatch(push('/order/complete'));
+                }).catch(() => {
+                    alert('注文処理に失敗しました。通信環境をお確かめのうえ、もう一度お試しください。')
+                    return false;
+                })
         }
     }
 }

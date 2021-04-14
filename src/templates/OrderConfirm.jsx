@@ -43,6 +43,10 @@ const OrderConfirm = (props) => {
     const tax = subtotal * 0.1;
     const total = subtotal + shippingFee + tax;
     
+    const order = useCallback(() => {
+        dispatch(orderProduct(productsInCart, total))
+    }, [productsInCart, total]);
+
     return (
         <section className='c-section-wrapin'>
             <h2 className='u-text__headline'>注文の確認</h2>
@@ -60,6 +64,7 @@ const OrderConfirm = (props) => {
                     <TextDetail label={'送料'} value={'¥' + shippingFee.toLocaleString()} />
                     <Divider />
                     <TextDetail label={'合計(税込)'} value={'¥' + total.toLocaleString()} />
+                    <PrimaryButton label={'注文する'} onClick={order} />
                 </div>
             </div>
         </section>
