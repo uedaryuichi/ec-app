@@ -10,7 +10,9 @@ import {theme} from './assets/theme';
 import reportWebVitals from './reportWebVitals';
 
 const history = History.createBrowserHistory();
-export const store = createStore(history);
+export const store = createStore(
+    history,
+);
 
 ReactDOM.render(
   <Provider store={store}>
