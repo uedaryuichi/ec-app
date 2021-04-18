@@ -1,4 +1,4 @@
-import {fetchProductsInCartAction, signInAction, signOutAction} from './actions';
+import {fetchOrdersHistoryAction, fetchProductsInCartAction, signInAction, signOutAction} from './actions';
 import {push} from 'connected-react-router';
 import {auth, db, FirebaseTimestamp} from '../../firebase/index';
 
@@ -12,25 +12,25 @@ export const addProductToCart = (addedProduct) => {
     }
 }
 
-// export const fetchOrdersHistory = () => {
-//     return async (dispatch, getState) => {
-//         const uid = getState().users.uid;
-//         const list = [];
+export const fetchOrdersHistory = () => {
+    return async (dispatch, getState) => {
+        const uid = getState().users.uid;
+        const list = [];
 
-//         db.collection('users').doc(uid)
-//             .collection('orders')
-//             .orderBy('updated_at', 'desc')
-//             .get()
-//             .then((snapshots) => {
-//                 snapshots.forEach(snapshot => {
-//                     const data = snapshot.data()
-//                     list.push(data)
-//                 });
+        db.collection('users').doc(uid)
+            .collection('orders')
+            .orderBy('updated_at', 'desc')
+            .get()
+            .then((snapshots) => {
+                snapshots.forEach(snapshot => {
+                    const data = snapshot.data()
+                    list.push(data)
+                });
 
-//                 dispatch(fetchOrdersHistoryAction(list))
-//             })
-//     }
-// }
+                dispatch(fetchOrdersHistoryAction(list))
+            })
+    }
+}
 
 export const fetchProductsInCart = (products) => {
     return async (dispatch) => {
